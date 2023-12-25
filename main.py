@@ -2,7 +2,14 @@ import cv2
 import os
 from datetime import datetime
 import tkinter as tk
-from tkinter import filedialog, , messagebox
+from tkinter import filedialog, messagebox
+import pygame
+
+# Khởi tạo thư viện âm thanh
+pygame.mixer.init()
+alert_sound = pygame.mixer.Sound("beep-warning-6387.mp3")  # Thay "alert.wav" bằng tên file âm thanh của bạn
+def play_alert_sound():
+    alert_sound.play()
 def select_file():
     file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4")])
     if file_path:
@@ -33,8 +40,9 @@ def select_file():
             if cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:  # Kiểm tra nếu không có khung hình trả về
-                    messagebox.showinfo("Motion Detected", "Video đá kết thúc!")
+                    messagebox.showinfo("Motion Detected", "Video đã kết thúc!")
                     break
+
                 frame = cv2.resize(frame, (640, 480))
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
@@ -63,7 +71,8 @@ def select_file():
                         last_capture_time = current_time
                         file_name = f"{output_dir}/motion_{current_time.strftime('%Y%m%d%H%M%S')}.jpg"
                         cv2.imwrite(file_name, frame)
-
+                        # Phát âm thanh cảnh báo
+                        play_alert_sound()
                 cv2.imshow("Motion Detection", frame)
 
                 if cv2.waitKey(40) == 27:  # Nhấn Esc để thoát
@@ -138,7 +147,8 @@ def start_camera():
                 last_capture_time = current_time
                 file_name = f"{output_dir}/motion_{current_time.strftime('%Y%m%d%H%M%S')}.jpg"
                 cv2.imwrite(file_name, frame)
-
+                # Phát âm thanh cảnh báo
+                play_alert_sound()
         cv2.imshow("Motion Detection", frame)
 
         if cv2.waitKey(40) == 27:  # Nhấn Esc để thoát
