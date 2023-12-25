@@ -2,7 +2,7 @@ import cv2
 import os
 from datetime import datetime
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, , messagebox
 def select_file():
     file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4")])
     if file_path:
@@ -33,7 +33,7 @@ def select_file():
             if cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:  # Kiểm tra nếu không có khung hình trả về
-                    print("Video kết thúc")
+                    messagebox.showinfo("Motion Detected", "Video đá kết thúc!")
                     break
                 frame = cv2.resize(frame, (640, 480))
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
