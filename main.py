@@ -7,12 +7,17 @@ import pygame
 
 # Khởi tạo thư viện âm thanh
 pygame.mixer.init()
-alert_sound = pygame.mixer.Sound("beep-warning-6387.mp3")  # Thay "alert.wav" bằng tên file âm thanh của bạn
+alert_sound = pygame.mixer.Sound("beep-warning-6387.mp3") 
 def play_alert_sound():
     alert_sound.play()
+    
 def select_file():
-    file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4")])
+    file_path = filedialog.askopenfilename(filetypes=[("All files", "*.*")])
     if file_path:
+        # Kiểm tra định dạng tệp
+        if not file_path.lower().endswith(('.mp4', '.avi', '.mkv', '.mov', '.flv')):
+            messagebox.showerror("Error", "Sai định dạng. Hãy chọn file khác")
+            return
         cap = cv2.VideoCapture(file_path)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -74,7 +79,6 @@ def select_file():
                         # Phát âm thanh cảnh báo
                         play_alert_sound()
                 cv2.imshow("Motion Detection", frame)
-
                 if cv2.waitKey(40) == 27:  # Nhấn Esc để thoát
                     break
         cap.release()
@@ -157,6 +161,7 @@ def start_camera():
     cv2.destroyAllWindows()
 root = tk.Tk()
 root.title("Motion Detection")
+
 
 file_button = tk.Button(root, text="Select Video File", command=select_file)
 file_button.pack()
