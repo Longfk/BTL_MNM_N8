@@ -4,20 +4,11 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import pygame
-import telegram
-
-
-# Khai báo thông tin bot Telegram
-bot_token = "6473041440:AAEvFul4-Wy0K144hR6dxRuPa3NPc0IUmzw"
-chat_id = "6728680494"
-
-bot = telegram.Bot(token=bot_token)
-
 
 # Khởi tạo thư viện âm thanh
-pygame.mixer.init()
-alert_sound = pygame.mixer.Sound("beep-warning-6387.mp3") 
 def play_alert_sound():
+    pygame.mixer.init()
+    alert_sound = pygame.mixer.Sound("yolo/lYL/beep-warning-6387.mp3")
     alert_sound.play()
     
 def select_file():
@@ -40,8 +31,6 @@ def select_file():
         roi = cv2.selectROI('Video', frame, fromCenter=False, showCrosshair=True)
         cv2.destroyWindow('Video')
         x, y, w, h = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
-
-        print(x, y, w, h)
 
         # Tạo thư mục chứa ảnh được chụp
         output_dir = "captured_images"
@@ -66,11 +55,10 @@ def select_file():
                 abs_img = cv2.absdiff(last_frame[y:y + h, x:x + w], gray[y:y + h, x:x + w])
                 last_frame = gray
 
-
                 _, img_mask = cv2.threshold(abs_img, 2, 255, cv2.THRESH_BINARY)
                 contours, _ = cv2.findContours(img_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 for contour in contours:
-                    if cv2.contourArea(contour) < 900:
+                    if cv2.contourArea(contour) < 450:
                         continue
 
                     x1, y1, w1, h1 = cv2.boundingRect(contour)
@@ -87,10 +75,6 @@ def select_file():
                         cv2.imwrite(file_name, frame)
                         # Phát âm thanh cảnh báo
                         play_alert_sound()
-
-                        # Gửi ảnh qua bot Telegram
-                        bot.sendPhoto(chat_id=chat_id, photo = open(file_name,"rb"), caption=" Nguy hiêm!")
-
                 cv2.imshow("Motion Detection", frame)
                 if cv2.waitKey(40) == 27:  # Nhấn Esc để thoát
                     break
@@ -112,8 +96,6 @@ def start_camera():
     cv2.destroyWindow('Video')
     x, y, w, h = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
 
-    print(x, y, w, h)
-
     # Tạo thư mục chứa ảnh được chụp
     output_dir = "captured_images"
     os.makedirs(output_dir, exist_ok=True)
@@ -123,8 +105,6 @@ def start_camera():
 
     while True:
         _, frame = cap.read()
-        print(ret)
-        print(frame.shape)
         frame = cv2.resize(frame, (640, 480))
 
         # Lật lại cả khung hình
@@ -149,7 +129,7 @@ def start_camera():
         contours, _ = cv2.findContours(img_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
-            if cv2.contourArea(contour) < 900:
+            if cv2.contourArea(contour) < 450:
                 continue
 
             x1, y1, w1, h1 = cv2.boundingRect(contour)
@@ -166,11 +146,6 @@ def start_camera():
                 cv2.imwrite(file_name, frame)
                 # Phát âm thanh cảnh báo
                 play_alert_sound()
-
-                # Gửi ảnh qua bot Telegram
-                bot.sendPhoto(chat_id=chat_id, photo = open(file_name,"rb"), caption=" Nguy hiêm!")
-
-
         cv2.imshow("Motion Detection", frame)
 
         if cv2.waitKey(40) == 27:  # Nhấn Esc để thoát
@@ -179,7 +154,7 @@ def start_camera():
     cv2.destroyAllWindows()
 root = tk.Tk()
 root.title("Motion Detection")
-
+root.geometry("200x50")
 
 file_button = tk.Button(root, text="Select Video File", command=select_file)
 file_button.pack()
