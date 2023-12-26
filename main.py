@@ -4,6 +4,15 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import pygame
+import telegram
+
+
+# Khai báo thông tin bot Telegram
+bot_token = "6473041440:AAEvFul4-Wy0K144hR6dxRuPa3NPc0IUmzw"
+chat_id = "6728680494"
+
+bot = telegram.Bot(token=bot_token)
+
 
 # Khởi tạo thư viện âm thanh
 pygame.mixer.init()
@@ -73,6 +82,10 @@ def select_file():
                         cv2.imwrite(file_name, frame)
                         # Phát âm thanh cảnh báo
                         play_alert_sound()
+
+                        # Gửi ảnh qua bot Telegram
+                        bot.sendPhoto(chat_id=chat_id, photo = open(file_name,"rb"), caption=" Nguy hiêm!")
+
                 cv2.imshow("Motion Detection", frame)
 
                 if cv2.waitKey(40) == 27:  # Nhấn Esc để thoát
@@ -149,6 +162,11 @@ def start_camera():
                 cv2.imwrite(file_name, frame)
                 # Phát âm thanh cảnh báo
                 play_alert_sound()
+
+                # Gửi ảnh qua bot Telegram
+                bot.sendPhoto(chat_id=chat_id, photo = open(file_name,"rb"), caption=" Nguy hiêm!")
+
+
         cv2.imshow("Motion Detection", frame)
 
         if cv2.waitKey(40) == 27:  # Nhấn Esc để thoát
